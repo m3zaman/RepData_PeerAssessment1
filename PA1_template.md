@@ -1,14 +1,10 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ### Loading and preprocessing the data
 
-```{r results='hide'}
+
+```r
 d <- read.csv("activity.csv")
 ```
 
@@ -16,60 +12,107 @@ I'm loading the activity data using *read.csv* function. No specific processing 
 
 ### What is mean total number of steps taken per day?
 
-```{r}
+
+```r
 steps_per_day <- tapply(d$steps, d$date, sum)
 hist(steps_per_day)
 ```
-```{r echo=FALSE,results='hide'}
-s <- summary(steps_per_day)
-m1 <- format(s[4], digits=6) ## Mean value
-m2 <- format(s[3], digits=6) ## Median value
-```
-The *mean* value is **`r m1`** and *median* value is **`r m2`**.
+
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+
+The *mean* value is **10770** and *median* value is **10760**.
 
 
 ### What is the average daily activity pattern?
-```{r}
+
+```r
 spd <- tapply(d$steps, d$interval, mean, na.rm=T)
 plot(unique(d$interval),spd, type="l",xlab = "Interval",ylab = "Avg Steps")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
 
 Interval **835** contains the maximum number of steps.
 
 ### Imputing missing values
 - Missing values in our data.frame
-```{r echo=FALSE}
-summary(d)[7]
+
+```
+## [1] "NA's   :2304  "
 ```
 - Imputing the data using **Hmisc** library
-```{r echo=FALSE,results='hide'}
-library(Hmisc)
-d1 <- d
-d1[,1] <- impute(d1[,1], mean)
+
+```
+## Warning: package 'Hmisc' was built under R version 3.1.2
+```
+
+```
+## Loading required package: grid
+## Loading required package: lattice
+```
+
+```
+## Warning: package 'lattice' was built under R version 3.1.2
+```
+
+```
+## Loading required package: survival
+```
+
+```
+## Warning: package 'survival' was built under R version 3.1.2
+```
+
+```
+## Loading required package: Formula
+```
+
+```
+## Warning: package 'Formula' was built under R version 3.1.2
+```
+
+```
+## Loading required package: ggplot2
+```
+
+```
+## Warning: package 'ggplot2' was built under R version 3.1.2
+```
+
+```
+## 
+## Attaching package: 'Hmisc'
+## 
+## The following objects are masked from 'package:base':
+## 
+##     format.pval, round.POSIXt, trunc.POSIXt, units
 ```
 - Plotting the hist
-```{r}
+
+```r
 steps_per_day1 <- tapply(d1$steps, d1$date, sum)
 hist(steps_per_day1)
 ```
-```{r echo=FALSE,results='hide'}
-s1 <- summary(steps_per_day1)
-m11 <- format(s1[4], digits=6) ## Mean value
-m12 <- format(s1[3], digits=6) ## Median value
-```
-New *mean* value is **`r m11`** and *median* value is **`r m12`**.
+
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
+
+New *mean* value is **10770** and *median* value is **10770**.
 
 I have used mean value for imputing the missing data. I have found that the revised mean and median value is almost the same.
 
 ### Are there differences in activity patterns between weekdays and weekends?
 - Creating weekday/weekend factor data
-```{r results='hide'}
+
+```r
 d1$wk <- factor((weekdays(as.Date(d1$date)) %in% c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'))+1L, levels=1:2, labels=c('weekend', 'weekday'))
 
 library(lattice)
 ```
 
-```{r}
+
+```r
 spd1 <- tapply(d1$steps, d1$interval, mean, na.rm=T)
 xyplot(spd1~unique(d1$interval) | factor(d1$wk), data=d1, type="l",layout=c(1,2))
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-10-1.png) 
